@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+  django:
+    container_name: uts_lms
+    build: .
+    volumes:
+      - ./code:/code
+    ports:
+      - "8011:8000"
+    # command: sleep infinity
+    command: python manage.py runserver 0.0.0.0:8000
+
+  postgres:
+    container_name: uts_db
+    image: postgres:16.3
+    environment:
+      POSTGRES_DB: uts_lms
+      POSTGRES_USER: uts_user
+      POSTGRES_PASSWORD: uts_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+       - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5500:5432"
+    

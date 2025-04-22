@@ -1,0 +1,4 @@
+django    ==5.1.2     #unutk framework
+psycopg2-binary == 2.9.10 # driver psotgress
+Pillow    == 11.0.0     # untuk mengolah gambar
+django-silk == 5.2.0    # untuk monitoring performa
