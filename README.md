@@ -1,6 +1,6 @@
 ## Nama : Wildan Devanata Rizkyvianto
 ## NIM  : A11.2022.14593
-## Kelp : 
+## Kelp : A11.4601
 
 --------------------
 
@@ -10,7 +10,7 @@ Sistem manajemen inventaris berbasis Django untuk mengelola barang, kategori, da
 
 ## Fitur
 
-- Manajemen Dashboard (view stock items,total 
+- Manajemen Dashboard (view stock items,total value, jumlah kategori & jumlah suppliers)
 - Manajemen Item (Create, Read)
 - Manajemen Kategori (Create, Read)
 - Manajemen Supplier (Create, Read)
