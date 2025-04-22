@@ -1,76 +1,530 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Items dalam Kategori: {{ category.name }}</h1>
-        <div>
-            <a href="{% url 'category_list' %}" class="btn btn-secondary">Kembali ke Daftar Kategori</a>
-            <a href="{% url 'item_create' %}?category={{ category.id }}" class="btn btn-primary">Tambah Item Baru</a>
+<!-- Dashboard Header -->
+<div class="dashboard-header">
+    <h1><i class="fas fa-tachometer-alt me-3"></i>Dashboard</h1>
+    <p class="text-muted">Ringkasan data inventaris Anda</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mt-2">
+    <div class="col-md-3">
+        <div class="stat-card items-card">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <div class="stat-info">
+                    <h5>Total Items</h5>
+                    <p class="stat-value">{{ total_items }}</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-blue" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-footer">
+                <a href="{% url 'item_list' %}" class="stat-link">Lihat semua items <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
         </div>
     </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card value-card">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="stat-info">
+                    <h5>Total Stock Value</h5>
+                    <p class="stat-value">Rp {{ total_stock_value }}</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-green" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-footer">
+                <span class="stat-text"><i class="fas fa-chart-line me-1"></i> Nilai total inventaris</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card categories-card">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <div class="stat-info">
+                    <h5>Categories</h5>
+                    <p class="stat-value">{{ total_categories }}</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-purple" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-footer">
+                <a href="{% url 'category_list' %}" class="stat-link">Lihat semua kategori <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card suppliers-card">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="stat-info">
+                    <h5>Suppliers</h5>
+                    <p class="stat-value">{{ total_suppliers }}</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-orange" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-footer">
+                <a href="{% url 'supplier_list' %}" class="stat-link">Lihat semua supplier <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Ringkasan Kategori</h5>
-            <div class="row">
-                <div class="col-md-4">
-                    <p class="mb-1">Total Items: {{ category.item_count }}</p>
+<!-- Additional Charts Section -->
+<div class="row g-4 mt-4">
+    <div class="col-md-8">
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <h5><i class="fas fa-chart-bar me-2"></i>Distribusi Item per Kategori</h5>
+            </div>
+            <div class="chart-card-body">
+                <div class="chart-placeholder">
+                    <div class="chart-bars">
+                        <div class="chart-bar" style="height: 70%;" data-label="Elektronik"></div>
+                        <div class="chart-bar" style="height: 45%;" data-label="Makanan"></div>
+                        <div class="chart-bar" style="height: 60%;" data-label="Pakaian"></div>
+                        <div class="chart-bar" style="height: 85%;" data-label="Alat Rumah"></div>
+                        <div class="chart-bar" style="height: 30%;" data-label="Lainnya"></div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <p class="mb-1">Total Nilai: Rp {{ category.total_value|default:0|floatformat:2 }}</p>
-                </div>
-                <div class="col-md-4">
-                    <p class="mb-1">Rata-rata Harga: Rp {{ category.avg_price|default:0|floatformat:2 }}</p>
+                <div class="chart-legend">
+                    <div class="legend-item"><span class="legend-color bg-blue"></span> Item per kategori</div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Nama Item</th>
-                    <th>Stok</th>
-                    <th>Harga</th>
-                    <th>Total Nilai</th>
-                    <th>Supplier</th>
-                    <th>Status Stok</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in items %}
-                <tr>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>Rp {{ item.price|floatformat:2 }}</td>
-                    <td>Rp {{ item.total_value|floatformat:2 }}</td>
-                    <td>{{ item.supplier.name }}</td>
-                    <td>
-                        {% if item.quantity < 5 %}
-                        <span class="badge bg-danger">Stok Rendah</span>
-                        {% else %}
-                        <span class="badge bg-success">Stok Cukup</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center">Tidak ada item dalam kategori ini</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr class="table-info">
-                    <td><strong>Total</strong></td>
-                    <td><strong>{{ total_quantity }}</strong></td>
-                    <td></td>
-                    <td><strong>Rp {{ total_value|floatformat:2 }}</strong></td>
-                    <td colspan="2"></td>
-                </tr>
-            </tfoot>
-        </table>
+    
+    <div class="col-md-4">
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <h5><i class="fas fa-exclamation-triangle me-2"></i>Stock Alert</h5>
+            </div>
+            <div class="chart-card-body">
+                <div class="stock-alert">
+                    <div class="stock-status">
+                        <div class="status-circle low"></div>
+                        <div class="status-info">
+                            <h6>Low Stock</h6>
+                            <p>5 items</p>
+                        </div>
+                    </div>
+                    <div class="stock-status">
+                        <div class="status-circle ok"></div>
+                        <div class="status-info">
+                            <h6>Adequate Stock</h6>
+                            <p>12 items</p>
+                        </div>
+                    </div>
+                    <div class="stock-status">
+                        <div class="status-circle high"></div>
+                        <div class="status-info">
+                            <h6>Overstocked</h6>
+                            <p>3 items</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Quick Actions -->
+<div class="quick-actions mt-4">
+    <h5 class="quick-actions-title"><i class="fas fa-bolt me-2"></i>Aksi Cepat</h5>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <a href="{% url 'item_create' %}" class="quick-action-card">
+                <div class="quick-action-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="quick-action-text">Tambah Item Baru</div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'category_create' %}" class="quick-action-card">
+                <div class="quick-action-icon">
+                    <i class="fas fa-folder-plus"></i>
+                </div>
+                <div class="quick-action-text">Tambah Kategori</div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'supplier_create' %}" class="quick-action-card">
+                <div class="quick-action-icon">
+                    <i class="fas fa-truck-loading"></i>
+                </div>
+                <div class="quick-action-text">Tambah Supplier</div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="#" class="quick-action-card">
+                <div class="quick-action-icon">
+                    <i class="fas fa-file-export"></i>
+                </div>
+                <div class="quick-action-text">Export Data</div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Dashboard Header */
+    .dashboard-header {
+        margin-bottom: 2rem;
+    }
+    
+    .dashboard-header h1 {
+        display: flex;
+        align-items: center;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Stat Cards */
+    .stat-card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 10px;
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card-body {
+        padding: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.8rem;
+        margin-right: 1rem;
+        color: white;
+    }
+    
+    .items-card .stat-icon {
+        background-image: linear-gradient(135deg, #3498db, #2980b9);
+    }
+    
+    .value-card .stat-icon {
+        background-image: linear-gradient(135deg, #2ecc71, #27ae60);
+    }
+    
+    .categories-card .stat-icon {
+        background-image: linear-gradient(135deg, #9b59b6, #8e44ad);
+    }
+    
+    .suppliers-card .stat-icon {
+        background-image: linear-gradient(135deg, #e67e22, #d35400);
+    }
+    
+    .stat-info {
+        flex: 1;
+    }
+    
+    .stat-info h5 {
+        font-size: 0.95rem;
+        color: #7f8c8d;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.75rem;
+    }
+    
+    .progress {
+        height: 6px;
+        border-radius: 3px;
+        background-color: #f0f3f6;
+        margin-bottom: 0.5rem;
+    }
+    
+    .progress-bar {
+        border-radius: 3px;
+    }
+    
+    .bg-blue {
+        background-image: linear-gradient(90deg, #3498db, #2980b9);
+    }
+    
+    .bg-green {
+        background-image: linear-gradient(90deg, #2ecc71, #27ae60);
+    }
+    
+    .bg-purple {
+        background-image: linear-gradient(90deg, #9b59b6, #8e44ad);
+    }
+    
+    .bg-orange {
+        background-image: linear-gradient(90deg, #e67e22, #d35400);
+    }
+    
+    .stat-footer {
+        padding: 0.75rem 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        background-color: #f8f9fa;
+    }
+    
+    .stat-link {
+        color: #3498db;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .stat-link:hover {
+        color: #2980b9;
+    }
+    
+    .stat-text {
+        color: #7f8c8d;
+        font-size: 0.85rem;
+    }
+    
+    /* Chart Cards */
+    .chart-card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .chart-card:hover {
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+    
+    .chart-card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        background-color: #f8f9fa;
+    }
+    
+    .chart-card-header h5 {
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+    }
+    
+    .chart-card-body {
+        padding: 1.5rem;
+    }
+    
+    /* Chart Placeholder */
+    .chart-placeholder {
+        height: 250px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        margin-bottom: 1rem;
+    }
+    
+    .chart-bars {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .chart-bar {
+        width: 40px;
+        min-height: 30%;
+        border-radius: 5px 5px 0 0;
+        background-image: linear-gradient(to top, #3498db, #5dade2);
+        position: relative;
+    }
+    
+    .chart-bar::after {
+        content: attr(data-label);
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.75rem;
+        color: #7f8c8d;
+        white-space: nowrap;
+    }
+    
+    .chart-legend {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin: 0 0.5rem;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+    }
+    
+    .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        margin-right: 0.5rem;
+    }
+    
+    /* Stock Alert */
+    .stock-alert {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+    
+    .stock-status {
+        display: flex;
+        align-items: center;
+    }
+    
+    .status-circle {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+    }
+    
+    .status-circle.low {
+        background-color: #e74c3c;
+    }
+    
+    .status-circle.ok {
+        background-color: #2ecc71;
+    }
+    
+    .status-circle.high {
+        background-color: #f1c40f;
+    }
+    
+    .status-info h6 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #2c3e50;
+    }
+    
+    .status-info p {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin: 0;
+    }
+    
+    /* Quick Actions */
+    .quick-actions-title {
+        display: flex;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+    
+    .quick-action-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.5rem 1rem;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #2c3e50;
+        text-align: center;
+        height: 100%;
+    }
+    
+    .quick-action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        color: #3498db;
+    }
+    
+    .quick-action-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background-image: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+        color: #3498db;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .quick-action-card:hover .quick-action-icon {
+        background-image: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+    
+    .quick-action-text {
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .stat-card-body {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .stat-icon {
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .chart-bar {
+            width: 30px;
+        }
+    }
+</style>
 {% endblock %}
