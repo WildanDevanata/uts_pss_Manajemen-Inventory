@@ -56,9 +56,10 @@ Sistem manajemen inventaris berbasis Django untuk mengelola barang, kategori, da
 
 1. Lakukan Login di http://localhost:8011/admin
    dengan mengisi username dan password yang ada pada file code/db_seed/admins.csv
-   username    password
-   admin1      123
-   admin2      123
-   admin3      123
+   | Username | Password |
+   |----------|----------|
+   | admin1   | 123      |
+   | admin2   | 123      |
+   | admin3   | 123      |
 3. Sekarang operasi Create sudah bisa dilakukan.
 4. Jika tidak melakukan login maka sistem akan memberikan pemberitahuan tidak dapat menambahkan data karena admin tidak ditemukan.
