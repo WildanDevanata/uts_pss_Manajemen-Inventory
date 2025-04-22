@@ -16,7 +16,7 @@ import time
 
 start_time = time.time()
 
-filepath = './db_seed/'  # Sesuaikan path jika perlu
+filepath = './core/db_seed/'  # Sesuaikan path jika perlu
 
 
 with open(filepath + 'admins.csv') as csvfile:
