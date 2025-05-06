@@ -1,6 +1,6 @@
 ## Nama : Wildan Devanata Rizkyvianto
 ## NIM  : A11.2022.14593
-## Kelp : A11.4601
+## Kelp : A11.4604 Hari Jumat
 
 --------------------
 
